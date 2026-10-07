@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TV Cast</title>
+<style>
+  :root { --fg: #f2f2f2; --dim: #9aa0a6; --accent: #ffb300; --bad: #ff6b6b; }
+  html, body { margin: 0; height: 100%; background: #000; color: var(--fg);
+               font-family: system-ui, "Segoe UI", Roboto, sans-serif; overflow: hidden; cursor: none; }
+  video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+  .hidden { display: none !important; }
+
+  #idle { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+          gap: 6vw; background: radial-gradient(circle at 30% 30%, #1d2333, #07080c 70%); }
+  #idle h1 { font-size: 4.2vw; margin: 0 0 1vw; font-weight: 700; }
+  #idle p { font-size: 1.8vw; color: var(--dim); margin: .6vw 0; }
+  #idle .url { color: var(--accent); font-size: 2.2vw; font-weight: 600; }
+  #idle img { width: 18vw; height: 18vw; border-radius: 1vw; background: #fff; }
+  #conn { position: fixed; top: 2vw; right: 2.5vw; font-size: 1.3vw; color: var(--dim); }
+  #conn.off { color: var(--bad); }
+
+  #osd { position: fixed; left: 0; right: 0; bottom: 0; padding: 4vw 5vw 3vw;
+         background: linear-gradient(transparent, rgba(0,0,0,.85)); transition: opacity .3s; }
+  #osd.fade { opacity: 0; }
+  #osd .title { font-size: 2.2vw; font-weight: 600; margin-bottom: 1.2vw;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #osd .row { display: flex; align-items: center; gap: 1.5vw; font-size: 1.6vw; }
+  #osd .bar { flex: 1; height: .5vw; background: rgba(255,255,255,.25); border-radius: .3vw; overflow: hidden; }
+  #osd .bar div { height: 100%; width: 0; background: var(--accent); }
+  #osd .icon { width: 2.4vw; text-align: center; }
+
+  #toast { position: fixed; top: 3vw; left: 50%; transform: translateX(-50%); padding: 1vw 2vw;
+           background: rgba(20,20,20,.9); border-radius: .8vw; font-size: 1.7vw; max-width: 70vw; text-align: center; }
+  #toast.err { color: var(--bad); }
+  #spinner { position: fixed; top: 50%; left: 50%; width: 5vw; height: 5vw; margin: -2.5vw;
+             border: .5vw solid rgba(255,255,255,.2); border-top-color: var(--accent); border-radius: 50%;
+             animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<video id="v" playsinline></video>
+
+<div id="idle">
+  <div>
+    <h1>📺 TV Cast hazır</h1>
+    <p>Telefonda kumandayı aç:</p>
+    <p class="url" id="remoteUrl"></p>
+    <p>ya da QR kodu okut, sonra izlemek istediğin sayfanın linkini gönder.</p>
+  </div>
+  <img src="/qr.svg" alt="QR">
+</div>
+
+<div id="osd" class="hidden fade">
+  <div class="title" id="osdTitle"></div>
+  <div class="row">
+    <span class="icon" id="osdIcon">▶</span>
+    <span id="osdCur">0:00</span>
+    <div class="bar"><div id="osdBar"></div></div>
+    <span id="osdDur">0:00</span>
+  </div>
+</div>
+
+<div id="spinner" class="hidden"></div>
+<div id="toast" class="hidden"></div>
+<div id="conn" class="off">bağlanıyor…</div>
+
+<script src="/static/vendor/hls.min.js"></script>
+<script src="/static/tv.js"></script>
+</body>
+</html>

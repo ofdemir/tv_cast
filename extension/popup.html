@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --bg: #111318; --card: #1b1e26; --line: #2a2e39; --fg: #eceff4; --dim: #8b93a5;
+          --accent: #ffb300; --bad: #ff6b6b; --ok: #4cd97b; }
+  body { margin: 0; width: 380px; background: var(--bg); color: var(--fg);
+         font: 13px/1.4 system-ui, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  h1 { font-size: 15px; margin: 0; }
+  #srvState { font-size: 12px; color: var(--dim); }
+  #srvState.ok { color: var(--ok); } #srvState.bad { color: var(--bad); }
+  main { padding: 10px 14px 14px; }
+  .page { color: var(--dim); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
+  .item .top { display: flex; gap: 6px; align-items: center; margin-bottom: 4px; }
+  .tag { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: #2b303c; }
+  .tag.hls { color: var(--accent); }
+  .host { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .path { color: var(--dim); font-size: 11px; word-break: break-all; max-height: 30px; overflow: hidden; margin-bottom: 8px; }
+  button { font: inherit; border: 0; border-radius: 8px; padding: 8px 10px; cursor: pointer; background: #2b303c; color: var(--fg); }
+  button.primary { background: var(--accent); color: #1a1300; font-weight: 700; width: 100%; }
+  button:disabled { opacity: .5; }
+  .empty { color: var(--dim); padding: 6px 0 10px; }
+  .msg { margin-top: 8px; } .msg.err { color: var(--bad); } .msg.ok { color: var(--ok); }
+  details { margin-top: 10px; color: var(--dim); }
+  input { width: 100%; box-sizing: border-box; padding: 8px; margin-top: 6px; border-radius: 8px; border: 1px solid var(--line);
+          background: var(--card); color: var(--fg); font: inherit; }
+  .row { display: flex; gap: 6px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<header><h1>📺 TV Cast</h1><span id="srvState">…</span></header>
+<main>
+  <div class="page" id="page"></div>
+  <div id="list"></div>
+  <button id="sendPage" style="width:100%">Sayfa linkini gönder (sunucu çözsün)</button>
+  <div class="msg" id="msg"></div>
+  <details id="settings">
+    <summary>Sunucu adresi</summary>
+    <input id="server" placeholder="http://192.168.1.x:8000">
+    <div class="row"><button id="save">Kaydet</button></div>
+  </details>
+</main>
+<script src="popup.js"></script>
+</body>
+</html>
