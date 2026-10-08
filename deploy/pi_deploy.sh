@@ -80,7 +80,8 @@ if healthy "$TAG"; then
   # Deploy betiğinin kendisi de sürümle birlikte güncellenir
   install -m 755 "$DIR/deploy/pi_deploy.sh" "$BASE/bin/pi_deploy.sh"
   # Eski sürümleri temizle (çalışan hariç son $KEEP tanesi kalır)
-  ls -1dt "$BASE"/releases/v*/ 2>/dev/null | sed 's#/$##' | grep -vx "$DIR" |
+  # (grep eşleşme bulamazsa 1 döner; pipefail altında betiği düşürmesin)
+  ls -1dt "$BASE"/releases/v*/ 2>/dev/null | sed 's#/$##' | { grep -vx "$DIR" || true; } |
     tail -n +"$KEEP" | xargs -r rm -rf
   exit 0
 fi
