@@ -11,6 +11,7 @@ let osdTimer = null;
 let toastTimer = null;
 
 $('remoteUrl').textContent = location.origin + '/';
+fetch('/api/health').then((r) => r.json()).then((h) => { $('ver').textContent = h.version; }).catch(() => {});
 
 // ------------------------------------------------------------ bağlantı
 function connect() {

@@ -14,6 +14,7 @@
   #idle { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
           gap: 6vw; background: radial-gradient(circle at 30% 30%, #1d2333, #07080c 70%); }
   #idle h1 { font-size: 4.2vw; margin: 0 0 1vw; font-weight: 700; }
+  #idle .ver { font-size: 1.4vw; font-weight: 500; color: var(--dim); margin-left: .4vw; }
   #idle p { font-size: 1.8vw; color: var(--dim); margin: .6vw 0; }
   #idle .url { color: var(--accent); font-size: 2.2vw; font-weight: 600; }
   #idle img { width: 18vw; height: 18vw; border-radius: 1vw; background: #fff; }
@@ -44,7 +45,7 @@
 
 <div id="idle">
   <div>
-    <h1>📺 TV Cast hazır</h1>
+    <h1>📺 TV Cast hazır <small id="ver" class="ver"></small></h1>
     <p>Telefonda kumandayı aç:</p>
     <p class="url" id="remoteUrl"></p>
     <p>ya da QR kodu okut, sonra izlemek istediğin sayfanın linkini gönder.</p>
