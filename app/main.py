@@ -28,6 +28,18 @@ STATIC = os.path.join(HERE, "static")
 DATA = os.environ.get("TVCAST_DATA", os.path.join(os.path.dirname(HERE), "data"))
 
 
+def _read_version():
+    # Deploy betiği sürüm klasörüne VERSION dosyası yazar; geliştirmede "dev"
+    try:
+        with open(os.path.join(os.path.dirname(HERE), "VERSION"), encoding="utf-8") as f:
+            return f.read().strip() or "dev"
+    except OSError:
+        return "dev"
+
+
+VERSION = _read_version()
+
+
 class Hub:
     def __init__(self):
         self.tvs: set[WebSocket] = set()
@@ -147,6 +159,11 @@ async def cast(req: CastReq):
     await hub.broadcast_state()
     return {"ok": True, "title": title, "kind": r.kind, "start": start,
             "tv_connected": bool(hub.tvs)}
+
+
+@app.get("/api/health")
+async def health():
+    return {"ok": True, "version": VERSION}
 
 
 @app.get("/api/history")

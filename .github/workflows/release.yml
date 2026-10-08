@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'  # Pi'deki sürüm (Bookworm)
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Python sözdizimi
+        run: python -m compileall -q app tests
+      - name: JS sözdizimi
+        run: for f in app/static/*.js extension/*.js; do node --check "$f"; done
+      - name: Kabuk betikleri
+        run: bash -n deploy/pi_deploy.sh && bash -n deploy/bootstrap_pi.sh
+      - name: Duman testi
+        run: python tests/smoke.py
+
+  # Testler geçerse etiket için GitHub Release oluşturulur; Pi yalnızca Release'leri kurar.
+  release:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Release oluştur
+        run: gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

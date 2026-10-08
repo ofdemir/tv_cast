@@ -151,3 +151,4 @@ if (incoming) {
 
 connect();
 loadHistory();
+fetch('/api/health').then((r) => r.json()).then((h) => { $('version').textContent = 'TV Cast ' + h.version; }).catch(() => {});

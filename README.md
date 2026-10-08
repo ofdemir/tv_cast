@@ -19,19 +19,32 @@ Arka plan ve TV testleri: `../tv_cast_probe/README.md`.
 
 **PC'de (geliştirme):** `run.bat` → telefonda `http://<pc-ip>:8000/`, TV'de `http://<pc-ip>:8000/tv`
 
-**Raspberry Pi'de (kalıcı):**
-
-```bash
-# önce tv_cast klasörünü .venv HARİÇ Pi'ye kopyala (Windows venv'i Pi'de çalışmaz), sonra Pi'de:
-cd ~/tv_cast && sh deploy/install_pi.sh
-```
-
-Servis port 80'de açılır ve açılışta otomatik başlar. yt-dlp her pazartesi 04:00'te güncellenir
-(siteler değiştikçe gerekli). Loglar: `journalctl -u tv-cast -f`
+**Raspberry Pi'de:** sürümlü otomatik deploy (aşağıda).
 
 Öneriler:
 - Modemde Pi'ye **sabit IP (DHCP rezervasyonu)** ver, böylece adresler değişmez.
 - TV tarayıcısında `http://<pi-ip>/tv` adresini **yer imi / başlangıç sayfası** yap.
+
+## Sürüm yayınlama ve otomatik deploy
+
+```
+./release.sh 0.2.0
+   └─ main + v0.2.0 etiketi GitHub'a gönderilir
+        └─ GitHub Actions: sözdizimi + duman testi ──geçerse──► GitHub Release v0.2.0
+             └─ Pi (tv-cast-update.timer, dakikada bir) yeni Release'i görür
+                  ├─ releases/v0.2.0'a indirir, ayrı .venv kurar
+                  ├─ current -> v0.2.0, servisi yeniden başlatır
+                  └─ /api/health sürümü doğrulanamazsa önceki sürüme geri döner
+```
+
+- Pi dışarıdan erişim gerektirmez; GitHub'ı kendisi yoklar. Test geçmeyen sürüm Release olmaz,
+  dolayısıyla Pi'ye hiç gelmez. Çalışan sürüm kumandanın en altında görünür.
+- Pi'deki dizin: `~/apps/tv_cast/{releases,current,shared/data,state,bin}`. Son 3 sürüm saklanır.
+- **Elle geri dönüş:** `ssh ofarukdemir@192.168.1.109 ~/apps/tv_cast/bin/pi_deploy.sh v0.1.0`
+  (sağlık kontrolünden geçemeyen sürümler `state/bad_tags`'e yazılır ve otomatik tekrar denenmez)
+- **Loglar:** `journalctl -u tv-cast -u tv-cast-update -f`
+- **İlk kurulum (tek sefer, ilk Release yayınlandıktan sonra, Pi'de):**
+  `curl -fsSL https://raw.githubusercontent.com/ofdemir/tv_cast/main/deploy/bootstrap_pi.sh | bash`
 
 ## Kullanım
 
@@ -84,4 +97,8 @@ Doğrudan `.m3u8` / `.mp4` linkleri yt-dlp'ye uğramadan oynatılır.
 | `app/store.py` | Geçmiş ve kaldığın yer (`data/state.json`) |
 | `app/static/tv.*` | TV alıcı sayfası |
 | `app/static/remote.*` | Telefon kumandası |
-| `deploy/` | Pi kurulum betiği ve systemd servisi |
+| `deploy/pi_deploy.sh` | Pi: yeni Release'i kur, sağlık kontrolü, geri dönüş |
+| `deploy/bootstrap_pi.sh` | Pi: tek seferlik kurulum (systemd servis + timer) |
+| `.github/workflows/release.yml` | CI: testler, etiketlerde Release oluşturma |
+| `release.sh` | PC: sürüm yayınla |
+| `tests/smoke.py` | Duman testi |
