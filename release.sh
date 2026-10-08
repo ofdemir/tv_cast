@@ -23,5 +23,7 @@ for p in .venv/Scripts/python .venv/bin/python; do [ -x "$p" ] && PY="$p" && bre
 "$PY" tests/smoke.py
 
 git tag -a "$TAG" -m "$TAG"
-git push origin main "$TAG"
+# Ayrı push: dal ve etiket aynı push'ta gidince GitHub etiket için workflow tetiklemeyebiliyor
+git push origin main
+git push origin "$TAG"
 echo "Gönderildi: $TAG  ->  https://github.com/ofdemir/tv_cast/actions"

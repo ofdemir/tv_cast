@@ -67,7 +67,9 @@ switch_to() {
 healthy() {
   for _ in $(seq 1 40); do
     sleep 1
-    curl -fs --max-time 2 "http://127.0.0.1:$PORT/api/health" | grep -q "\"version\":\"$1\"" && return 0
+    local body
+    body=$(curl -fs --max-time 2 "http://127.0.0.1:$PORT/api/health" || true)
+    [[ "$body" == *"\"version\":\"$1\""* ]] && return 0
   done
   return 1
 }

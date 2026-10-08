@@ -13,8 +13,9 @@ RAW="https://raw.githubusercontent.com/$REPO/main/deploy"
 echo "== paketler"
 sudo apt-get install -y -qq python3-venv curl >/dev/null
 
-if ! curl -fsSI --max-time 15 "https://github.com/$REPO/releases/latest" | tr -d '\r' |
-     grep -iq '^location:.*/tag/v'; then
+# Çıktıyı önce değişkene al: pipefail altında 'curl | grep -q' SIGPIPE ile yanlış sonuç verir
+HEAD=$(curl -fsSI --max-time 15 "https://github.com/$REPO/releases/latest" || true)
+if ! printf '%s' "$HEAD" | tr -d '\r' | grep -iq '^location:.*/tag/v'; then
   echo "GitHub'da henüz release yok. Önce bir sürüm etiketi gönderin (ör. v0.1.0)."
   exit 1
 fi
