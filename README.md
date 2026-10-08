@@ -40,7 +40,7 @@ Arka plan ve TV testleri: `../tv_cast_probe/README.md`.
 - Pi dışarıdan erişim gerektirmez; GitHub'ı kendisi yoklar. Test geçmeyen sürüm Release olmaz,
   dolayısıyla Pi'ye hiç gelmez. Çalışan sürüm kumandanın en altında görünür.
 - Pi'deki dizin: `~/apps/tv_cast/{releases,current,shared/data,state,bin}`. Son 3 sürüm saklanır.
-- **Elle geri dönüş:** `ssh ofarukdemir@192.168.1.109 ~/apps/tv_cast/bin/pi_deploy.sh v0.1.0`
+- **Elle geri dönüş:** `ssh ofarukdemir@192.168.1.109 '~/apps/tv_cast/bin/pi_deploy.sh v0.1.0'` (tırnaklar şart: yoksa Git Bash `~`'yi PC'deki ev klasörüne çevirir)
   (sağlık kontrolünden geçemeyen sürümler `state/bad_tags`'e yazılır ve otomatik tekrar denenmez)
 - **Loglar:** `journalctl -u tv-cast -u tv-cast-update -f`
 - **İlk kurulum (tek sefer, ilk Release yayınlandıktan sonra, Pi'de):**
