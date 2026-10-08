@@ -10,12 +10,13 @@ import asyncio
 import io
 import json
 import os
+import re
 import secrets
 from contextlib import asynccontextmanager
 
 import segno
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -99,14 +100,33 @@ app = FastAPI(title="TV Cast", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
 
+@app.middleware("http")
+async def static_no_cache(request: Request, call_next):
+    # Tarayıcı statik dosyayı saklayabilir ama kullanmadan önce sunucuya sormalı (ETag ile 304)
+    resp = await call_next(request)
+    if request.url.path.startswith("/static/"):
+        resp.headers["Cache-Control"] = "no-cache"
+    return resp
+
+
+def _page(name):
+    # /static/... adreslerine sürüm ekle: yeni sürümde önbellekteki eski JS hiç kullanılmaz
+    with open(os.path.join(STATIC, name), encoding="utf-8") as f:
+        html = f.read()
+    return re.sub(r'((?:src|href)="/static/[^"?]+)"', lambda m: f'{m.group(1)}?v={VERSION}"', html)
+
+
+PAGES = {name: _page(name) for name in ("remote.html", "tv.html")}
+
+
 @app.get("/")
 async def remote_page():
-    return FileResponse(os.path.join(STATIC, "remote.html"), headers={"Cache-Control": "no-cache"})
+    return HTMLResponse(PAGES["remote.html"], headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/tv")
 async def tv_page():
-    return FileResponse(os.path.join(STATIC, "tv.html"), headers={"Cache-Control": "no-cache"})
+    return HTMLResponse(PAGES["tv.html"], headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/qr.svg")

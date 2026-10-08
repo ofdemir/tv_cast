@@ -25,6 +25,11 @@ def main():
         h = c.get("/api/health").json()
         assert h["ok"] is True and h["version"], h
 
+        # Statik dosyalar sürüm parametresiyle istenmeli ve no-cache dönmeli (eski JS önbellekte kalmasın)
+        assert f'/static/tv.js?v={h["version"]}"' in c.get("/tv").text
+        assert f'/static/remote.js?v={h["version"]}"' in c.get("/").text
+        assert c.get("/static/tv.js").headers["cache-control"] == "no-cache"
+
         with c.websocket_connect("/ws/tv") as tv:
             r = c.post("/api/cast", json={"url": "https://example.com/video/index.m3u8",
                                           "page": "https://example.com/izle/1", "title": "Test"})
