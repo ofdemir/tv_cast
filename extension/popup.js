@@ -1,7 +1,7 @@
 'use strict';
 
 const $ = (id) => document.getElementById(id);
-const DEFAULT_SERVER = 'http://192.168.1.110:8000';
+const DEFAULT_SERVER = 'http://192.168.1.109';
 let server = DEFAULT_SERVER;
 let tab = null;
 
